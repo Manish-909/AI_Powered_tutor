@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Powered Tutor - Courses</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Global Styles */
+        :root {
+            --primary-color: #4A90E2; /* Calm blue */
+            --secondary-color: #50E3C2; /* Teal */
+            --background-color: #121212; /* Dark background */
+            --text-color: #FFFFFF; /* White text */
+            --card-color: #1F1F1F; /* Dark cards */
+            --border-radius: 10px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        body.light-theme {
+            --background-color: #F5F7FA; /* Light background */
+            --text-color: #2D3748; /* Dark text */
+            --card-color: #FFFFFF; /* Light cards */
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        a {
+            text-decoration: none;
+            color: var(--primary-color);
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--card-color);
+            box-shadow: var(--box-shadow);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: var(--border-radius);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        header nav {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        header nav a {
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        header nav a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Theme Toggle Button */
+        .theme-toggle {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            background-color: #357ABD;
+        }
+
+        /* Course Filtering */
+        .filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .filters button {
+            background-color: var(--card-color);
+            color: var(--text-color);
+            border: 1px solid var(--primary-color);
+            border-radius: var(--border-radius);
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .filters button.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .filters button:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* Course Cards */
+        .course-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* 3 cards per row */
+            gap: 20px;
+        }
+
+        .card {
+            background-color: var(--card-color);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+            transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h3 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+        }
+
+        .card p {
+            color: var(--text-color);
+            margin-bottom: 20px;
+        }
+
+        .card .button-container {
+            display: flex;
+            justify-content: center;
+        }
+
+        .card .button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%;
+            text-align: center;
+        }
+
+        .card .button:hover {
+            background-color: #357ABD;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--card-color);
+            box-shadow: var(--box-shadow);
+            padding: 20px;
+            text-align: center;
+            margin-top: 20px;
+            border-radius: var(--border-radius);
+        }
+
+        footer p {
+            margin: 0;
+            color: var(--text-color);
+        }
+        /* New styles for course request section */
+        .course-request {
+            margin-top: 40px;
+            background-color: var(--card-color);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--box-shadow);
+        }
+
+        .course-request h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .request-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .form-group label {
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            padding: 10px;
+            border: 1px solid var(--primary-color);
+            border-radius: var(--border-radius);
+            background-color: var(--card-color);
+            color: var(--text-color);
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .submit-request {
+            background-color: var(--secondary-color);
+            color: var(--background-color);
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 12px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            align-self: flex-start;
+        }
+
+        .submit-request:hover {
+            background-color: #3fc7ae;
+        }
+
+        .confirmation {
+            display: none;
+            margin-top: 15px;
+            padding: 10px;
+            background-color: rgba(80, 227, 194, 0.2);
+            border-radius: var(--border-radius);
+            color: var(--secondary-color);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">AI-Powered Tutor</div>
+        <nav>
+            <a href="main.html">Dashboard</a>
+            <a href="courses.html">Courses</a>
+            <a href="class_room.html">Classroom</a>
+            <button class="theme-toggle" id="themeToggle">Toggle Theme</button>
+            <a href="login.html">Logout</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h1>Available Courses</h1>
+        <!-- Course Filters -->
+        <div class="filters">
+            <button class="active" onclick="filterCourses('all')">All</button>
+            <button onclick="filterCourses('ai')">AI</button>
+            <button onclick="filterCourses('ml')">Machine Learning</button>
+            <button onclick="filterCourses('ds')">Data Science</button>
+        </div>
+
+        <!-- Course List -->
+        <div class="course-list">
+            <div class="card" data-category="ai">
+                <h3>Introduction to AI</h3>
+                <p>Learn the basics of artificial intelligence and its applications.</p>
+                <div class="button-container">
+                    <button class="button" id="enrollIntroAI" onclick="enrollCourse('Introduction to AI', 'enrollIntroAI')">Enroll Now</button>
+                </div>
+            </div>
+            
+            <div class="card" data-category="ml">
+                <h3>Machine Learning Essentials</h3>
+                <p>Dive deeper into the world of machine learning with hands-on examples.</p>
+                <div class="button-container">
+                    <button class="button" id="enrollMLEssentials" onclick="enrollCourse('Machine Learning Essentials', 'enrollMLEssentials')">Enroll Now</button>
+                </div>
+            </div>
+
+            <div class="card" data-category="ds">
+                <h3>Data Science with Python</h3>
+                <p>Master data science concepts with Python and real-world projects.</p>
+                <div class="button-container">
+                    <button class="button" id="enrollDataScience" onclick="enrollCourse('Data Science with Python', 'enrollDataScience')">Enroll Now</button>
+                </div>
+            </div>
+
+            <div class="card" data-category="ai">
+                <h3>Advanced AI Concepts</h3>
+                <p>Explore advanced topics in artificial intelligence, including deep learning and neural networks.</p>
+                <div class="button-container">
+                    <button class="button" id="enrollAdvancedAI" onclick="enrollCourse('Advanced AI Concepts', 'enrollAdvancedAI')">Enroll Now</button>
+                </div>
+            </div>
+
+            <div class="card" data-category="ml">
+                <h3>Deep Learning Fundamentals</h3>
+                <p>Understand the core concepts of deep learning and its applications.</p>
+                <div class="button-container">
+                    <button class="button" id="enrollDeepLearning" onclick="enrollCourse('Deep Learning Fundamentals', 'enrollDeepLearning')">Enroll Now</button>
+                </div>
+            </div>
+
+            <div class="card" data-category="ds">
+                <h3>Big Data Analytics</h3>
+                <p>Learn how to analyze and process large datasets using modern tools and techniques.</p>
+                <div class="button-container">
+                    <button class="button" id="enrollBigData" onclick="enrollCourse('Big Data Analytics', 'enrollBigData')">Enroll Now</button>
+                </div>
+            </div>
+        </div>
+        <div class="course-request">
+            <h2>Can't Find What You're Looking For?</h2>
+            <p>Request a new course or suggest a topic you'd like us to add to our curriculum.</p>
+            
+            <form class="request-form" id="courseRequestForm">
+                <div class="form-group">
+                    <label for="requestTopic">Course Topic/Title</label>
+                    <input type="text" id="requestTopic" name="requestTopic" required placeholder="e.g., Computer Vision Fundamentals">
+                </div>
+                
+                <div class="form-group">
+                    <label for="requestCategory">Category</label>
+                    <select id="requestCategory" name="requestCategory" required>
+                        <option value="">Select a category</option>
+                        <option value="ai">Artificial Intelligence</option>
+                        <option value="ml">Machine Learning</option>
+                        <option value="ds">Data Science</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="requestDetails">Tell us more about what you're looking for</label>
+                    <textarea id="requestDetails" name="requestDetails" required placeholder="Describe the course content, learning objectives, or specific skills you want to acquire"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="requestEmail">Your Email (optional for updates)</label>
+                    <input type="email" id="requestEmail" name="requestEmail" placeholder="your@email.com">
+                </div>
+                
+                <button type="submit" class="submit-request">Submit Request</button>
+                
+                <div class="confirmation" id="requestConfirmation">
+                    Thank you for your suggestion! We'll review your course request and notify you if we add it to our curriculum.
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <p>AI-Powered Tutor</p>
+    </footer>
+
+    <script>
+        // Theme Toggle Functionality
+        const themeToggle = document.getElementById("themeToggle");
+        const body = document.body;
+
+        // Check for saved theme in localStorage
+        const savedTheme = localStorage.getItem("theme");
+        if (savedTheme) {
+            body.classList.add(savedTheme);
+            updateButtonText();
+        }
+
+        // Toggle Theme
+        themeToggle.addEventListener("click", () => {
+            body.classList.toggle("light-theme");
+            localStorage.setItem("theme", body.classList.contains("light-theme") ? "light-theme" : "");
+            updateButtonText();
+        });
+
+        // Update Button Text
+        function updateButtonText() {
+            if (body.classList.contains("light-theme")) {
+                themeToggle.textContent = "Dark Mode";
+            } else {
+                themeToggle.textContent = "Light Mode";
+            }
+        }
+
+        // Course Filtering
+        function filterCourses(category) {
+            const cards = document.querySelectorAll(".card");
+            const filterButtons = document.querySelectorAll(".filters button");
+
+            // Update active filter button
+            filterButtons.forEach(button => button.classList.remove("active"));
+            document.querySelector(`.filters button[onclick="filterCourses('${category}')"]`).classList.add("active");
+
+            // Filter courses
+            cards.forEach(card => {
+                if (category === "all" || card.getAttribute("data-category") === category) {
+                    card.style.display = "block";
+                } else {
+                    card.style.display = "none";
+                }
+            });
+        }
+
+        // Enroll in Course
+        function enrollCourse(courseName, buttonId) {
+            // Get enrolled courses from localStorage
+            let enrolledCourses = JSON.parse(localStorage.getItem("enrolledCourses")) || [];
+
+            // Check if the course is already enrolled
+            if (!enrolledCourses.includes(courseName)) {
+                // Add the new course
+                enrolledCourses.push(courseName);
+                localStorage.setItem("enrolledCourses", JSON.stringify(enrolledCourses));
+
+                // Update the button text and disable it
+                const enrollButton = document.getElementById(buttonId);
+                enrollButton.textContent = "Enrolled";
+                enrollButton.disabled = true;
+
+                alert(`You have successfully enrolled in ${courseName}!`);
+            } else {
+                alert(`You are already enrolled in ${courseName}.`);
+            }
+        }
+
+        // Initialize enrolled courses
+        function initializeEnrolledCourses() {
+            const enrolledCourses = JSON.parse(localStorage.getItem("enrolledCourses")) || [];
+            enrolledCourses.forEach(course => {
+                const buttonId = `enroll${course.replace(/\s+/g, '')}`; // Generate button ID
+                const enrollButton = document.getElementById(buttonId);
+                if (enrollButton) {
+                    enrollButton.textContent = "Enrolled";
+                    enrollButton.disabled = true;
+                }
+            });
+        }
+
+        // Initialize
+        initializeEnrolledCourses();
+
+         // Course Request Form Handling
+         document.getElementById('courseRequestForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // In a real application, you would send this data to your server
+            const formData = {
+                topic: document.getElementById('requestTopic').value,
+                category: document.getElementById('requestCategory').value,
+                details: document.getElementById('requestDetails').value,
+                email: document.getElementById('requestEmail').value,
+                timestamp: new Date().toISOString()
+            };
+            
+            // Save to localStorage (in a real app, you would send to a backend)
+            let courseRequests = JSON.parse(localStorage.getItem('courseRequests')) || [];
+            courseRequests.push(formData);
+            localStorage.setItem('courseRequests', JSON.stringify(courseRequests));
+            
+            // Show confirmation
+            document.getElementById('requestConfirmation').style.display = 'block';
+            
+            // Reset form
+            this.reset();
+            
+            // Hide confirmation after 5 seconds
+            setTimeout(() => {
+                document.getElementById('requestConfirmation').style.display = 'none';
+            }, 5000);
+        });
+
+        function enrollCourse(courseName, buttonId) {
+    // List of completed courses
+    const completedCourses = [
+        "Introduction to AI",
+        "Advanced AI Concepts",
+        "Machine Learning Essentials"
+    ];
+
+    // Check if the course is completed
+    if (completedCourses.includes(courseName)) {
+        // Get enrolled courses from localStorage
+        let enrolledCourses = JSON.parse(localStorage.getItem("enrolledCourses")) || [];
+
+        // Check if the course is already enrolled
+        if (!enrolledCourses.includes(courseName)) {
+            // Add the new course
+            enrolledCourses.push(courseName);
+            localStorage.setItem("enrolledCourses", JSON.stringify(enrolledCourses));
+
+            // Update the button text and disable it
+            const enrollButton = document.getElementById(buttonId);
+            enrollButton.textContent = "Enrolled";
+            enrollButton.disabled = true;
+
+            alert(`You have successfully enrolled in ${courseName}!`);
+        } else {
+            alert(`You are already enrolled in ${courseName}.`);
+        }
+
+        // Redirect to the course page
+        if (courseName === "Introduction to AI") {
+            window.location.href = "Introduction_to_ai.html";
+        } else if (courseName === "Advanced AI Concepts") {
+            window.location.href = "Advance_ai_concepts.html";
+        } else if (courseName === "Machine Learning Essentials") {
+            window.location.href = "Machine_learning_essentials.html";
+        }
+        
+    } else {
+        // Redirect to development page for incomplete courses
+        window.location.href = `course_development.html?course=${encodeURIComponent(courseName)}`;
+    }
+}
+    
+    </script>
+</body>
+</html>
