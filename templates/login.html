@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Powered Tutor - Login</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1f1f1f;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: #fff;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .container {
+            background: rgba(51, 51, 51, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 191, 255, 0.3);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            backdrop-filter: blur(10px);
+        }
+
+        .container h2 {
+            margin-bottom: 20px;
+            color: #00bfff;
+        }
+
+        .form-group {
+            text-align: left;
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            color: #ccc;
+            font-size: 14px;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #555;
+            border-radius: 8px;
+            outline: none;
+            background: #444;
+            color: #fff;
+            transition: border-color 0.3s ease-in-out;
+        }
+
+        .form-group input:focus {
+            border-color: #00bfff;
+            box-shadow: 0 0 8px rgba(0, 191, 255, 0.5);
+        }
+
+        .login-btn {
+            padding: 12px;
+            border: none;
+            background: linear-gradient(135deg, #00bfff, #008fbf);
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s ease-in-out;
+            width: 100%;
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .login-btn:hover {
+            box-shadow: 0 0 10px rgba(0, 191, 255, 0.6);
+        }
+
+        .error-message {
+            color: #ff4c4c;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha512/0.8.0/sha512.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h2>Login</h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="uid">User ID:</label>
+                <input type="text" id="uid" name="uid" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit" class="login-btn">Login</button>
+            <p class="error-message" id="error-message"></p>
+        </form>
+        <p>New user? <a href="register.html">Register here</a></p>
+    </div>
+
+    <script>
+        // Password hashing (same as register)
+        function hashPassword(password, salt) {
+            return sha512(password + salt);
+        }
+
+        // Handle login
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const uid = document.getElementById("uid").value;
+            const password = document.getElementById("password").value;
+            const users = JSON.parse(localStorage.getItem('secureUsers') || '{}');
+            const user = users[uid];
+
+            if (!user) {
+                showError("Invalid credentials");
+                return;
+            }
+
+            // Verify password
+            const hashedAttempt = hashPassword(password, user.salt);
+            if (hashedAttempt !== user.password) {
+                showError("Invalid credentials");
+                return;
+            }
+
+            // Update last login
+            user.lastLogin = new Date().toISOString();
+            users[uid] = user;
+            localStorage.setItem('secureUsers', JSON.stringify(users));
+
+            // Create session (without sensitive data)
+            const { password: _, salt: __, ...sessionUser } = user;
+            localStorage.setItem('currentUser', JSON.stringify(sessionUser));
+            
+            window.location.href = "main.html";
+        });
+
+        function showError(message) {
+            const el = document.getElementById('error-message');
+            el.style.display = 'block';
+            el.textContent = message;
+            setTimeout(() => el.style.display = 'none', 5000);
+        }
+    </script>
+</body>
+</html>

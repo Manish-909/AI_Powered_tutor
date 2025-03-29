@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introduction to AI - AI-Powered Tutor</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Global Styles */
+        :root {
+            --primary-color: #4A90E2; /* Calm blue */
+            --secondary-color: #50E3C2; /* Teal */
+            --background-color: #121212; /* Dark background */
+            --text-color: #FFFFFF; /* White text */
+            --card-color: #1F1F1F; /* Dark cards */
+            --border-radius: 10px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        body.light-theme {
+            --background-color: #F5F7FA; /* Light background */
+            --text-color: #2D3748; /* Dark text */
+            --card-color: #FFFFFF; /* Light cards */
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            overflow-x: hidden; /* Prevent horizontal scroll */
+        }
+
+        a {
+            text-decoration: none;
+            color: var(--primary-color);
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--card-color);
+            box-shadow: var(--box-shadow);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: var(--border-radius);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative; /* Ensure header stays on top */
+            z-index: 1000; /* Keep header above other elements */
+        }
+
+        header .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        header nav {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        header nav a {
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        header nav a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Theme Toggle Button */
+        .theme-toggle {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            background-color: #357ABD;
+        }
+
+        /* Chat with AI Button */
+        .chat-toggle-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .chat-toggle-btn:hover {
+            background-color: #357ABD;
+        }
+
+        /* Course Content */
+        .course-content {
+            background-color: var(--card-color);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+            margin-bottom: 20px;
+        }
+
+        .course-content h2 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .course-content p {
+            color: var(--text-color);
+            line-height: 1.8;
+        }
+
+        /* Slide-in Chat Window */
+        .chat-window {
+            position: fixed;
+            top: 20px; /* Add gap between header and chat window */
+            right: -50%; /* Hide chat window by default */
+            width: 50%; /* 50% of the screen width */
+            height: calc(100vh - 80px); /* Adjusted height with gap at top and bottom */
+            background-color: var(--card-color);
+            box-shadow: var(--box-shadow);
+            transition: right 0.3s ease;
+            z-index: 999; /* Ensure chat window is above other content */
+            border-radius: var(--border-radius) 0 0 var(--border-radius); /* Rounded edges on the left */
+        }
+
+        .chat-window.open {
+            right: 0; /* Slide in when open */
+        }
+
+        .chat-body {
+            padding: 20px;
+            height: calc(100vh - 180px); /* Adjusted height for input area */
+            overflow-y: auto; /* Enable scrolling for chat messages */
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 10px;
+            padding: 20px;
+            background-color: var(--card-color);
+            border-radius: 0 0 0 var(--border-radius); /* Rounded bottom-left corner */
+            position: relative; /* For positioning the close button */
+        }
+
+        .chat-input textarea {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            background-color: var(--card-color);
+            color: var(--text-color);
+            resize: none;
+        }
+
+        .chat-input textarea:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        /* Smaller buttons for Send and Close */
+        .chat-input button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 8px 16px; /* Reduced padding for smaller buttons */
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-size: 14px; /* Smaller font size */
+        }
+
+        .chat-input button:hover {
+            background-color: #357ABD;
+        }
+
+        /* Close button styling */
+        #closeChat {
+            background-color: transparent;
+            color: var(--text-color);
+            font-size: 20px; /* Slightly larger for visibility */
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #closeChat:hover {
+            color: var(--primary-color);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--card-color);
+            box-shadow: var(--box-shadow);
+            padding: 20px;
+            text-align: center;
+            margin-top: 20px;
+            border-radius: var(--border-radius);
+        }
+
+        footer p {
+            margin: 0;
+            color: var(--text-color);
+        }
+
+        .quiz-section {
+            margin-top: 40px;
+            padding: 20px;
+            background-color: var(--card-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+        
+        .quiz-question {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--primary-color);
+        }
+        
+        .quiz-options {
+            margin-left: 20px;
+        }
+        
+        .quiz-option {
+            margin-bottom: 8px;
+        }
+        
+        .quiz-submit-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 15px;
+            font-size: 1rem;
+        }
+        
+        .quiz-submit-btn:hover {
+            background-color: #357ABD;
+        }
+        
+        .quiz-result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: var(--card-color);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--primary-color);
+        }
+        
+        .quiz-score {
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .quiz-answers {
+            font-size: 0.9em;
+            color: var(--text-color);
+        }
+        
+        .correct-answer {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        
+        .incorrect-answer {
+            color: #F44336;
+        }
+        
+        .not-answered {
+            color: #FF9800;
+        }
+
+       
+
+/* Reference Materials Styles */
+.reference-materials {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.material-category {
+    background-color: rgba(74, 144, 226, 0.1);
+    padding: 15px;
+    border-radius: var(--border-radius);
+    border-left: 3px solid var(--secondary-color);
+}
+
+.material-category h3 {
+    color: var(--secondary-color);
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+.material-category ul {
+    padding-left: 20px;
+}
+
+.material-category li {
+    margin-bottom: 8px;
+    line-height: 1.4;
+}
+
+.material-category a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.material-category a:hover {
+    color: var(--secondary-color);
+    text-decoration: underline;
+}
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">AI-Powered Tutor</div>
+        <nav>
+            <a href="main.html">Dashboard</a>
+            <a href="courses.html">Courses</a>
+            <a href="class_room.html">Classroom</a>
+            <button class="theme-toggle" id="themeToggle">Toggle Theme</button>
+            <button class="chat-toggle-btn" id="chatToggle">AI Teacher</button>
+            <a href="login.html">Logout</a>
+        </nav>
+    </header>
+    
+    <div class="container">
+        <div class="course-content">
+            <h2>Introduction to Machine Learning</h2>
+            <p>Machine Learning (ML) is a transformative branch of artificial intelligence that enables systems to learn from data and improve their performance without being explicitly programmed. Today's AI has far surpassed earlier technologies like blockchain and quantum computing in impact, largely due to the availability of massive computing resources to developers and researchers.</p>
+            
+            <h3>What You'll Learn</h3>
+            <ul>
+                <li>The fundamental concepts and categories of machine learning</li>
+                <li>Key algorithms for supervised and unsupervised learning</li>
+                <li>Deep learning and neural networks</li>
+                <li>Practical applications of machine learning</li>
+                <li>Essential skills needed for machine learning</li>
+                <li>Implementation tools and platforms</li>
+            </ul>
+        </div>
+    
+        <div class="course-content">
+            <h2>What Today's AI Can Do</h2>
+            <p>Modern AI applications are all around us, often working behind the scenes to make our lives easier:</p>
+            
+            <div class="example-box">
+                <h4>Real-world Examples</h4>
+                <p><strong>Face Recognition:</strong> When you tag friends in Facebook photos, AI identifies faces in the image.</p>
+                <p><strong>Autonomous Vehicles:</strong> Self-driving cars use real-time object detection to navigate roads safely.</p>
+                <p><strong>Navigation Apps:</strong> Google Directions analyzes real-time traffic to suggest optimal routes.</p>
+                <p><strong>Language Translation:</strong> Apps like Google Translate help bridge language barriers instantly.</p>
+            </div>
+            
+            <p>These applications demonstrate AI's ability to handle complex tasks with remarkable accuracy. For instance, navigation apps must evaluate traffic conditions across all possible routes in real-time, a task that would be impossible without advanced ML techniques.</p>
+        </div>
+    
+        <div class="course-content">
+            <h2>Traditional AI vs. Modern Machine Learning</h2>
+            <p>AI began in the 1950s with statistical techniques when computing power was limited. Early AI relied on:</p>
+            <ul>
+                <li>Regression analysis</li>
+                <li>Classification methods</li>
+                <li>Clustering algorithms</li>
+                <li>Probability theories</li>
+                <li>Decision trees</li>
+            </ul>
+            
+            <p>While these techniques still have value, modern ML handles the vast amounts of data we now generate through more sophisticated approaches like deep learning.</p>
+            
+            <div class="comparison-box">
+                <div>
+                    <h4>Traditional AI</h4>
+                    <ul>
+                        <li>Relied on statistical methods</li>
+                        <li>Worked with small datasets</li>
+                        <li>Required explicit programming</li>
+                        <li>Limited to simpler problems</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Modern ML</h4>
+                    <ul>
+                        <li>Uses neural networks and deep learning</li>
+                        <li>Handles massive datasets</li>
+                        <li>Learns patterns automatically</li>
+                        <li>Solves complex, real-world problems</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    
+        <div class="course-content">
+            <h2>Categories of Machine Learning</h2>
+            <p>Machine learning can be broadly categorized into several approaches:</p>
+            
+            <h3>1. Supervised Learning</h3>
+            <p>Like teaching a child to walk by holding their hand, supervised learning provides the algorithm with labeled examples (input-output pairs) to learn from.</p>
+            <p><strong>Example:</strong> Housing price prediction where the model learns from historical price data to predict future prices.</p>
+            
+            <h3>2. Unsupervised Learning</h3>
+            <p>The algorithm explores data without predefined labels to discover hidden patterns or groupings.</p>
+            <p><strong>Example:</strong> Customer segmentation where the algorithm groups similar customers based on purchasing behavior.</p>
+            
+            <h3>3. Reinforcement Learning</h3>
+            <p>The algorithm learns through trial and error, receiving rewards for good decisions and penalties for bad ones.</p>
+            <p><strong>Example:</strong> Training AI to play games by rewarding successful moves.</p>
+            
+            <h3>4. Deep Learning</h3>
+            <p>Uses artificial neural networks with multiple layers to model complex patterns in large datasets.</p>
+            <p><strong>Example:</strong> Image recognition in medical diagnostics.</p>
+            
+            <h3>5. Deep Reinforcement Learning</h3>
+            <p>Combines deep learning with reinforcement learning for advanced applications.</p>
+            <p><strong>Example:</strong> Advanced robotics and autonomous systems.</p>
+        </div>
+    
+        <div class="course-content">
+            <h2>Key Machine Learning Algorithms</h2>
+            
+            <h3>Supervised Learning Algorithms</h3>
+            <div class="algorithm-card">
+                <h4>k-Nearest Neighbors (kNN)</h4>
+                <p>A simple algorithm that classifies new data points based on similarity to known examples.</p>
+                <p><strong>Use Case:</strong> Recommender systems, pattern recognition</p>
+            </div>
+            
+            <div class="algorithm-card">
+                <h4>Decision Trees</h4>
+                <p>Creates a model that predicts values by learning simple decision rules from data features.</p>
+                <p><strong>Use Case:</strong> Credit scoring, medical diagnosis</p>
+            </div>
+            
+            <div class="algorithm-card">
+                <h4>Naive Bayes</h4>
+                <p>Based on Bayes' theorem, it's particularly good for text classification.</p>
+                <p><strong>Use Case:</strong> Spam filtering, sentiment analysis</p>
+            </div>
+            
+            <div class="algorithm-card">
+                <h4>Support Vector Machines (SVM)</h4>
+                <p>Finds the optimal boundary between classes of data.</p>
+                <p><strong>Use Case:</strong> Image classification, bioinformatics</p>
+            </div>
+            
+            <h3>Unsupervised Learning Algorithms</h3>
+            <div class="algorithm-card">
+                <h4>k-means Clustering</h4>
+                <p>Groups similar data points together into k clusters.</p>
+                <p><strong>Use Case:</strong> Market segmentation, document clustering</p>
+            </div>
+        </div>
+    
+        <div class="course-content">
+            <h2>Artificial Neural Networks</h2>
+            <p>Inspired by the human brain, ANNs consist of interconnected nodes (neurons) organized in layers:</p>
+            
+            <ul>
+                <li><strong>Input Layer:</strong> Receives the data</li>
+                <li><strong>Hidden Layers:</strong> Process the data through weighted connections</li>
+                <li><strong>Output Layer:</strong> Produces the final result</li>
+            </ul>
+            
+            <h3>Common ANN Architectures</h3>
+            <div class="architecture-grid">
+                <div>
+                    <h4>Feedforward Networks</h4>
+                    <p>Information flows in one direction from input to output.</p>
+                </div>
+                <div>
+                    <h4>Recurrent Networks</h4>
+                    <p>Has connections that form directed cycles, allowing persistence of information.</p>
+                </div>
+                <div>
+                    <h4>Convolutional Networks</h4>
+                    <p>Specialized for processing grid-like data such as images.</p>
+                </div>
+                <div>
+                    <h4>Generative Adversarial Networks</h4>
+                    <p>Uses two competing networks to generate new, synthetic data.</p>
+                </div>
+            </div>
+        </div>
+    
+        <div class="course-content">
+            <h2>Deep Learning: Power and Limitations</h2>
+            
+            <h3>Remarkable Applications</h3>
+            <ul>
+                <li><strong>Self-driving cars:</strong> Continuously improve through experience</li>
+                <li><strong>Speech recognition:</strong> Powers virtual assistants like Siri and Alexa</li>
+                <li><strong>Computer vision:</strong> Enables facial recognition and object detection</li>
+            </ul>
+            
+            <h3>Current Limitations</h3>
+            <ul>
+                <li><strong>Black box nature:</strong> Difficult to interpret how decisions are made</li>
+                <li><strong>Data hunger:</strong> Requires massive amounts of training data</li>
+                <li><strong>Computational cost:</strong> Needs significant processing power</li>
+                <li><strong>Development time:</strong> Training complex models can take weeks</li>
+            </ul>
+        </div>
+    
+        <div class="course-content">
+            <h2>Essential Skills for Machine Learning</h2>
+            
+            <div class="skills-grid">
+                <div>
+                    <h4>Mathematics</h4>
+                    <ul>
+                        <li>Linear algebra</li>
+                        <li>Calculus</li>
+                        <li>Probability</li>
+                        <li>Statistics</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Programming</h4>
+                    <ul>
+                        <li>Python (most popular)</li>
+                        <li>R</li>
+                        <li>Data structures</li>
+                        <li>Algorithm design</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Data Skills</h4>
+                    <ul>
+                        <li>Data cleaning</li>
+                        <li>Feature engineering</li>
+                        <li>Data visualization</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Domain Knowledge</h4>
+                    <ul>
+                        <li>Understanding the problem area</li>
+                        <li>Business context</li>
+                        <li>Ethical considerations</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    
+        <div class="course-content">
+            <h2>Implementing Machine Learning</h2>
+            
+            <h3>Popular Tools and Frameworks</h3>
+            <ul>
+                <li><strong>Scikit-learn:</strong> Excellent for traditional ML algorithms</li>
+                <li><strong>TensorFlow/PyTorch:</strong> Leading frameworks for deep learning</li>
+                <li><strong>Keras:</strong> High-level neural networks API</li>
+            </ul>
+            
+            <h3>Development Platforms</h3>
+            <ul>
+                <li><strong>Google Colab:</strong> Free cloud-based Jupyter notebooks</li>
+                <li><strong>Kaggle:</strong> Platform for competitions and datasets</li>
+                <li><strong>Cloud Services:</strong> AWS, Google Cloud, Azure ML</li>
+            </ul>
+            
+            <h3>Deployment Considerations</h3>
+            <ul>
+                <li>Model serving infrastructure</li>
+                <li>Monitoring and maintenance</li>
+                <li>Continuous learning systems</li>
+            </ul>
+        </div>
+
+        <!-- Add this section right before the quiz section -->
+<div class="course-content">
+    <h2>Course Related Reference Materials</h2>
+    
+    <div class="reference-materials">
+        <div class="material-category">
+            <h3>Recommended Books & PDFs</h3>
+            <ul>
+                <li><a href="https://www.deeplearningbook.org/" target="_blank">Deep Learning Book (Ian Goodfellow, Yoshua Bengio, Aaron Courville)</a></li>
+                <li><a href="https://www.microsoft.com/en-us/research/uploads/prod/2006/01/Bishop-Pattern-Recognition-and-Machine-Learning-2006.pdf" target="_blank">Pattern Recognition and Machine Learning (Christopher Bishop)</a></li>
+                <li><a href="https://web.stanford.edu/~hastie/ElemStatLearn/" target="_blank">The Elements of Statistical Learning (Hastie, Tibshirani, Friedman)</a></li>
+            </ul>
+        </div>
+        
+        <div class="material-category">
+            <h3>Video Lectures & Courses</h3>
+            <ul>
+                <li><a href="https://www.coursera.org/learn/machine-learning" target="_blank">Machine Learning by Andrew Ng (Coursera)</a></li>
+                <li><a href="https://www.youtube.com/playlist?list=PLoROMvodv4rMiGQp3WXShtMGgzqpfVfbU" target="_blank">Stanford CS229: Machine Learning (YouTube)</a></li>
+                <li><a href="https://www.youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi" target="_blank">3Blue1Brown: Neural Networks (YouTube)</a></li>
+            </ul>
+        </div>
+        
+        <div class="material-category">
+            <h3>Blogs & Tutorials</h3>
+            <ul>
+                <li><a href="https://towardsdatascience.com/machine-learning/home" target="_blank">Towards Data Science (Machine Learning)</a></li>
+                <li><a href="https://machinelearningmastery.com/blog/" target="_blank">Machine Learning Mastery</a></li>
+                <li><a href="https://distill.pub/" target="_blank">Distill.pub (Interactive ML Articles)</a></li>
+            </ul>
+        </div>
+        
+        <div class="material-category">
+            <h3>Practice & Datasets</h3>
+            <ul>
+                <li><a href="https://www.kaggle.com/" target="_blank">Kaggle (Competitions & Datasets)</a></li>
+                <li><a href="https://archive.ics.uci.edu/ml/index.php" target="_blank">UCI Machine Learning Repository</a></li>
+                <li><a href="https://scikit-learn.org/stable/" target="_blank">scikit-learn Documentation</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+    
+        <div class="quiz-section">
+            <h2>Knowledge Check: Machine Learning Quiz</h2>
+            
+            <div class="quiz-question">
+                <p>1. Which of the following is NOT a category of machine learning?</p>
+                <div class="quiz-options">
+                    <div class="quiz-option">
+                        <input type="radio" name="q1" id="q1a" value="A">
+                        <label for="q1a">A. Supervised Learning</label>
+                    </div>
+                    <div class="quiz-option">
+                        <input type="radio" name="q1" id="q1b" value="B">
+                        <label for="q1b">B. Unsupervised Learning</label>
+                    </div>
+                    <div class="quiz-option">
+                        <input type="radio" name="q1" id="q1c" value="C">
+                        <label for="q1c">C. Reinforcement Learning</label>
+                    </div>
+                    <div class="quiz-option">
+                        <input type="radio" name="q1" id="q1d" value="D">
+                        <label for="q1d">D. Heuristic Learning</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="quiz-question">
+                <p>2. What is the main advantage of deep learning over traditional machine learning?</p>
+                <div class="quiz-options">
+                    <div class="quiz-option">
+                        <input type="radio" name="q2" id="q2a" value="A">
+                        <label for="q2a">A. Requires less data</label>
+                    </div>
+                    <div class="quiz-option">
+                        <input type="radio" name="q2" id="q2b" value="B">
+                        <label for="q2b">B. Can automatically extract features from raw data</label>
+                    </div>
+                    <div class="quiz-option">
+                        <input type="radio" name="q2" id="q2c" value="C">
+                        <label for="q2c">C. Easier to interpret</label>
+                    </div>
+                    <div class="quiz-option">
+                        <input type="radio" name="q2" id="q2d" value="D">
+                        <label for="q2d">D. Faster to train</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="quiz-question">
+                <p>3. In the k-Nearest Neighbors algorithm, what does the 'k' represent?</p>
+                <div class="quiz-options">
+                    <div class="quiz-option">
+                        <input type="radio" name="q3" id="q3a" value="A">
+                        <label for="q3a">A. The number of features in the dataset</label>
+                    </div>
+                    <div class="quiz-option">
+                        <input type="radio" name="q3" id="q3b" value="B">
+                        <label for="q3b">B. The number of neighbors to consider for classification</label>
+                    </div>
+                    <div class="quiz-option">
+                        <input type="radio" name="q3" id="q3c" value="C">
+                        <label for="q3c">C. The number of layers in the neural network</label>
+                    </div>
+                    <div class="quiz-option">
+                        <input type="radio" name="q3" id="q3d" value="D">
+                        <label for="q3d">D. The number of clusters to form</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="quiz-question">
+                <p>4. Which of these is a key challenge in reinforcement learning?</p>
+                <div class="quiz-options">
+                    <div class="quiz-option">
+                        <input type="radio" name="q4" id="q4a" value="A">
+                        <label for="q4a">A. The credit assignment problem</label>
+                    </div>
+                    <div class="quiz-option">
+                        <input type="radio" name="q4" id="q4b" value="B">
+                        <label for="q4b">B. The need for labeled training data</label>
+                    </div>
+                    <div class="quiz-option">
+                        <input type="radio" name="q4" id="q4c" value="C">
+                        <label for="q4c">C. The requirement for massive datasets</label>
+                    </div>
+                    <div class="quiz-option">
+                        <input type="radio" name="q4" id="q4d" value="D">
+                        <label for="q4d">D. The inability to handle continuous action spaces</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="quiz-question">
+                <p>5. What is the primary purpose of the activation function in a neural network?</p>
+                <div class="quiz-options">
+                    <div class="quiz-option">
+                        <input type="radio" name="q5" id="q5a" value="A">
+                        <label for="q5a">A. To initialize the weights</label>
+                    </div>
+                    <div class="quiz-option">
+                        <input type="radio" name="q5" id="q5b" value="B">
+                        <label for="q5b">B. To introduce non-linearity into the network</label>
+                    </div>
+                    <div class="quiz-option">
+                        <input type="radio" name="q5" id="q5c" value="C">
+                        <label for="q5c">C. To normalize the input data</label>
+                    </div>
+                    <div class="quiz-option">
+                        <input type="radio" name="q5" id="q5d" value="D">
+                        <label for="q5d">D. To reduce the dimensionality of the data</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="quiz-question">
+                <p>6. Which machine learning algorithm would be most appropriate for classifying emails as spam or not spam?</p>
+                <div class="quiz-options">
+                    <div class="quiz-option">
+                        <input type="radio" name="q6" id="q6a" value="A">
+                        <label for="q6a">A. k-means clustering</label>
+                    </div>
+                    <div class="quiz-option">
+                        <input type="radio" name="q6" id="q6b" value="B">
+                        <label for="q6b">B. Naive Bayes</label>
+                    </div>
+                    <div class="quiz-option">
+                        <input type="radio" name="q6" id="q6c" value="C">
+                        <label for="q6c">C. Principal Component Analysis</label>
+                    </div>
+                    <div class="quiz-option">
+                        <input type="radio" name="q6" id="q6d" value="D">
+                        <label for="q6d">D. Apriori algorithm</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="quiz-question">
+                <p>7. What is the main difference between supervised and unsupervised learning?</p>
+                <div class="quiz-options">
+                    <div class="quiz-option">
+                        <input type="radio" name="q7" id="q7a" value="A">
+                        <label for="q7a">A. Supervised learning requires more data</label>
+                    </div>
+                    <div class="quiz-option">
+                        <input type="radio" name="q7" id="q7b" value="B">
+                        <label for="q7b">B. Unsupervised learning doesn't use labeled data</label>
+                    </div>
+                    <div class="quiz-option">
+                        <input type="radio" name="q7" id="q7c" value="C">
+                        <label for="q7c">C. Supervised learning is always more accurate</label>
+                    </div>
+                    <div class="quiz-option">
+                        <input type="radio" name="q7" id="q7d" value="D">
+                        <label for="q7d">D. Unsupervised learning requires more computing power</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="quiz-question">
+                <p>8. Which of these is NOT a common activation function in neural networks?</p>
+                <div class="quiz-options">
+                    <div class="quiz-option">
+                        <input type="radio" name="q8" id="q8a" value="A">
+                        <label for="q8a">A. Sigmoid</label>
+                    </div>
+                    <div class="quiz-option">
+                        <input type="radio" name="q8" id="q8b" value="B">
+                        <label for="q8b">B. ReLU</label>
+                    </div>
+                    <div class="quiz-option">
+                        <input type="radio" name="q8" id="q8c" value="C">
+                        <label for="q8c">C. Tanh</label>
+                    </div>
+                    <div class="quiz-option">
+                        <input type="radio" name="q8" id="q8d" value="D">
+                        <label for="q8d">D. Softmax (used only in output layers)</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="quiz-question">
+                <p>9. What is the purpose of the loss function in training a neural network?</p>
+                <div class="quiz-options">
+                    <div class="quiz-option">
+                        <input type="radio" name="q9" id="q9a" value="A">
+                        <label for="q9a">A. To measure how well the model is performing</label>
+                    </div>
+                    <div class="quiz-option">
+                        <input type="radio" name="q9" id="q9b" value="B">
+                        <label for="q9b">B. To initialize the weights of the network</label>
+                    </div>
+                    <div class="quiz-option">
+                        <input type="radio" name="q9" id="q9c" value="C">
+                        <label for="q9c">C. To select the best activation function</label>
+                    </div>
+                    <div class="quiz-option">
+                        <input type="radio" name="q9" id="q9d" value="D">
+                        <label for="q9d">D. To determine the learning rate</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="quiz-question">
+                <p>10. Which of these statements about overfitting is TRUE?</p>
+                <div class="quiz-options">
+                    <div class="quiz-option">
+                        <input type="radio" name="q10" id="q10a" value="A">
+                        <label for="q10a">A. It occurs when the model is too simple</label>
+                    </div>
+                    <div class="quiz-option">
+                        <input type="radio" name="q10" id="q10b" value="B">
+                        <label for="q10b">B. It means the model performs well on training data but poorly on unseen data</label>
+                    </div>
+                    <div class="quiz-option">
+                        <input type="radio" name="q10" id="q10c" value="C">
+                        <label for="q10c">C. It can be completely eliminated with enough data</label>
+                    </div>
+                    <div class="quiz-option">
+                        <input type="radio" name="q10" id="q10d" value="D">
+                        <label for="q10d">D. It only occurs in neural networks</label>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="quiz-submit-btn" onclick="checkQuiz()">Submit Quiz</button>
+            
+            <div class="quiz-result" id="quizResult" style="display: none;">
+                <div class="quiz-score" id="quizScore"></div>
+                <div class="quiz-answers" id="quizAnswers"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Slide-in Chat Window -->
+    <div class="chat-window" id="chatWindow">
+        <div class="chat-body" id="chatBody">
+            <!-- Chat messages will appear here -->
+        </div>
+        <div class="chat-input">
+            <textarea id="userQuestion" rows="3" placeholder="Ask a question about the course..."></textarea>
+            <button onclick="askAI()">Send</button>
+            <button id="closeChat">&times;</button>
+        </div>
+    </div>
+
+    
+
+    <footer>
+        <p>AI-Powered Tutor</p>
+    </footer>
+
+    <script>
+        // Theme Toggle Functionality
+        const themeToggle = document.getElementById("themeToggle");
+        const body = document.body;
+
+        // Check for saved theme in localStorage
+        const savedTheme = localStorage.getItem("theme");
+        if (savedTheme) {
+            body.classList.add(savedTheme);
+            updateButtonText();
+        }
+
+        // Toggle Theme
+        themeToggle.addEventListener("click", () => {
+            body.classList.toggle("light-theme");
+            localStorage.setItem("theme", body.classList.contains("light-theme") ? "light-theme" : "");
+            updateButtonText();
+        });
+
+        // Update Button Text
+        function updateButtonText() {
+            if (body.classList.contains("light-theme")) {
+                themeToggle.textContent = "Dark Mode";
+            } else {
+                themeToggle.textContent = "Light Mode";
+            }
+        }
+
+        // Chat Window Toggle
+        const chatToggle = document.getElementById("chatToggle");
+        const chatWindow = document.getElementById("chatWindow");
+        const closeChat = document.getElementById("closeChat");
+
+        chatToggle.addEventListener("click", () => {
+            chatWindow.classList.toggle("open");
+        });
+
+        closeChat.addEventListener("click", () => {
+            chatWindow.classList.remove("open");
+        });
+
+        // Close chat window when clicking outside
+        document.addEventListener("click", (event) => {
+            if (!chatWindow.contains(event.target) && !chatToggle.contains(event.target)) {
+                chatWindow.classList.remove("open");
+            }
+        });
+
+        // Ask AI Functionality
+        async function askAI() {
+    const question = document.getElementById("userQuestion").value.trim();
+    const chatBody = document.getElementById("chatBody");
+    
+    if (!question) {
+        alert("Please enter a question.");
+        return;
+    }
+
+    // Clear previous errors
+    const existingErrors = document.querySelectorAll('.error-message');
+    existingErrors.forEach(el => el.remove());
+
+    // Add user message
+    chatBody.innerHTML += `<div class="user-message">You: ${question}</div>`;
+    
+    // Create response element
+    const responseId = "response-" + Date.now();
+    chatBody.innerHTML += `
+        <div id="${responseId}" class="ai-message">
+            <strong>AI Tutor:</strong> <span id="${responseId}-text"></span>
+            <span class="typing-cursor">|</span>
+        </div>
+    `;
+    chatBody.scrollTop = chatBody.scrollHeight;
+    
+    const responseText = document.getElementById(`${responseId}-text`);
+    const cursor = document.querySelector(`#${responseId} .typing-cursor`);
+    
+    try {
+        // First check backend health
+        const healthResponse = await fetch('http://localhost:5000/health');
+        if (!healthResponse.ok) {
+            throw new Error("Backend server not responding");
+        }
+        
+        const healthData = await healthResponse.json();
+        if (!healthData.ollama_available) {
+            throw new Error("Ollama service not available");
+        }
+        if (!healthData.vector_store_loaded) {
+            throw new Error("Course content not loaded - check PDF file");
+        }
+
+        // Setup EventSource for streaming
+        const eventSource = new EventSource(`http://localhost:5000/ask?question=${encodeURIComponent(question)}`);
+        
+        eventSource.onmessage = (event) => {
+            try {
+                if (event.data.includes('[DONE]')) {
+                    eventSource.close();
+                    cursor.style.display = "none";
+                    return;
+                }
+                
+                const data = JSON.parse(event.data.replace('data: ', ''));
+                if (data.token) {
+                    responseText.textContent += data.token;
+                    chatBody.scrollTop = chatBody.scrollHeight;
+                }
+            } catch (e) {
+                console.error("Error parsing message:", e);
+            }
+        };
+
+        eventSource.onerror = () => {
+            cursor.style.display = "none";
+            if (!responseText.textContent.trim()) {
+                responseText.innerHTML = `<span class="error-message">
+                    Connection error. Please:<br>
+                    1. Ensure the backend is running (python AI_Teacher.py)<br>
+                    2. Verify Ollama is running (ollama serve)<br>
+                    3. Check ai_course.pdf exists in course_data folder
+                </span>`;
+            }
+            eventSource.close();
+        };
+        
+    } catch (error) {
+        console.error("Error:", error);
+        document.getElementById(responseId).innerHTML = `
+            <div class="error-message">
+                <strong>Error:</strong> ${error.message}<br>
+                <small>Check console for details (F12 > Console)</small>
+            </div>
+        `;
+    }
+}
+function checkQuiz() {
+    // Define correct answers
+    const correctAnswers = {
+        q1: "D",
+        q2: "B",
+        q3: "B",
+        q4: "A",
+        q5: "B",
+        q6: "B",
+        q7: "B",
+        q8: "D",
+        q9: "A",
+        q10: "B"
+    };
+
+    let score = 0;
+    let answeredCount = 0;
+    let resultsHtml = "";
+    const totalQuestions = Object.keys(correctAnswers).length;
+
+    // Check each question
+    for (let i = 1; i <= totalQuestions; i++) {
+        const questionName = "q" + i;
+        const selectedOption = document.querySelector(`input[name="${questionName}"]:checked`);
+        
+        if (selectedOption) {
+            answeredCount++;
+            const userAnswer = selectedOption.value;
+            const isCorrect = userAnswer === correctAnswers[questionName];
+            
+            if (isCorrect) {
+                score++;
+                resultsHtml += `<p>Question ${i}: <span class="correct-answer">Correct!</span> (You chose ${userAnswer})</p>`;
+            } else {
+                resultsHtml += `<p>Question ${i}: <span class="incorrect-answer">Incorrect.</span> You chose ${userAnswer}, correct answer is <span class="correct-answer">${correctAnswers[questionName]}</span></p>`;
+            }
+        } else {
+            resultsHtml += `<p>Question ${i}: <span class="not-answered">Not answered</span> (Correct answer is <span class="correct-answer">${correctAnswers[questionName]}</span>)</p>`;
+        }
+    }
+
+    // Calculate percentage
+    const percentage = Math.round((score / totalQuestions) * 100);
+    
+    // Generate score message
+    let scoreMessage = `You scored ${score} out of ${totalQuestions} (${percentage}%) - `;
+    
+    if (percentage === 100) {
+        scoreMessage += "Perfect! 🎉 You're a machine learning expert!";
+    } else if (percentage >= 80) {
+        scoreMessage += "Excellent! 👍 You have strong ML knowledge!";
+    } else if (percentage >= 60) {
+        scoreMessage += "Good job! 😊 You're on the right track!";
+    } else if (percentage > 0) {
+        scoreMessage += "Keep practicing! 📚 Review the course materials.";
+    } else {
+        scoreMessage += "Try again! 💪 Don't give up!";
+    }
+    
+    // Show unanswered questions warning if applicable
+    if (answeredCount < totalQuestions) {
+        scoreMessage += `<br><small>You answered ${answeredCount} out of ${totalQuestions} questions.</small>`;
+    }
+    
+    // Display results
+    document.getElementById("quizScore").innerHTML = scoreMessage;
+    document.getElementById("quizAnswers").innerHTML = resultsHtml;
+    document.getElementById("quizResult").style.display = "block";
+    
+    // Scroll to results
+    document.getElementById("quizResult").scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'nearest'
+    });
+}
+        // Modify the askAI function in introduction_to_ai.html
+        async function askAI() {
+    const question = document.getElementById("userQuestion").value;
+    const course = "Introduction to AI"; // Get from your page context
+    const chatBody = document.getElementById("chatBody");
+    
+    if (!question) {
+        alert("Please enter a question.");
+        return;
+    }
+
+    // Add user message
+    chatBody.innerHTML += `<div class="user-message">You: ${question}</div>`;
+    
+    // Add loading indicator
+    const loadingId = "loading-" + Date.now();
+    chatBody.innerHTML += `<div id="${loadingId}" class="ai-message">AI is thinking...</div>`;
+    chatBody.scrollTop = chatBody.scrollHeight;
+
+    try {
+        const response = await fetch(`/ask?question=${encodeURIComponent(question)}&course=${encodeURIComponent(course)}`);
+        
+        if (!response.ok) {
+            throw new Error(`Server error: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.error) {
+            throw new Error(data.details || data.error);
+        }
+        
+        // Update with AI response
+        document.getElementById(loadingId).innerHTML = 
+            `<div class="ai-response">AI: ${data.reply}</div>`;
+        
+    } catch (error) {
+        document.getElementById(loadingId).innerHTML = 
+            `<div class="error-message">Error: ${error.message}</div>`;
+    } finally {
+        chatBody.scrollTop = chatBody.scrollHeight;
+    }
+}
+
+    // Handle errors
+    eventSource.onerror = (error) => {
+        console.error("EventSource failed:", error);
+        eventSource.close();
+        document.getElementById(loadingId).innerHTML = 
+            "<strong>AI Tutor:</strong> Sorry, I encountered an error. Please try again.";
+    };
+
+    </script>
+</body>
+</html>

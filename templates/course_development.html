@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course in Development - AI-Powered Tutor</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Global Styles */
+        :root {
+            --primary-color: #4A90E2;
+            --secondary-color: #50E3C2;
+            --background-color: #121212;
+            --text-color: #FFFFFF;
+            --card-color: #1F1F1F;
+            --border-radius: 10px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        body.light-theme {
+            --background-color: #F5F7FA;
+            --text-color: #2D3748;
+            --card-color: #FFFFFF;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        a {
+            text-decoration: none;
+            color: var(--primary-color);
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 70vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--card-color);
+            box-shadow: var(--box-shadow);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: var(--border-radius);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        header nav {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        header nav a {
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        header nav a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Theme Toggle Button */
+        .theme-toggle {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            background-color: #357ABD;
+        }
+
+        /* Main Content */
+        .course-content {
+            background-color: var(--card-color);
+            border-radius: var(--border-radius);
+            padding: 40px;
+            box-shadow: var(--box-shadow);
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .course-content h1 {
+            color: var(--primary-color);
+            margin-bottom: 25px;
+            font-size: 2.2rem;
+        }
+
+        .coming-soon {
+            font-size: 1.3rem;
+            margin-bottom: 35px;
+            color: var(--secondary-color);
+            font-weight: 500;
+        }
+
+        .features-container {
+            background-color: rgba(74, 144, 226, 0.1);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            margin: 0 auto 35px;
+            max-width: 600px;
+        }
+
+        .features-list {
+            text-align: left;
+            margin: 0 auto;
+        }
+
+        .features-list h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 1.3rem;
+        }
+
+        .features-list ul {
+            padding-left: 20px;
+            margin: 0;
+        }
+
+        .features-list li {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .progress-message {
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .notify-me {
+            background-color: var(--secondary-color);
+            color: var(--background-color);
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 14px 30px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 25px;
+        }
+
+        .notify-me:hover {
+            background-color: #3fc7ae;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .back-to-courses {
+            display: inline-block;
+            margin-top: 15px;
+            color: var(--primary-color);
+            font-size: 1rem;
+            transition: color 0.3s ease;
+        }
+
+        .back-to-courses:hover {
+            color: var(--secondary-color);
+            text-decoration: none;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--card-color);
+            box-shadow: var(--box-shadow);
+            padding: 20px;
+            text-align: center;
+            margin-top: 40px;
+            border-radius: var(--border-radius);
+        }
+
+        footer p {
+            margin: 0;
+            color: var(--text-color);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">AI-Powered Tutor</div>
+        <nav>
+            <a href="main.html">Dashboard</a>
+            <a href="courses.html">Courses</a>
+            <a href="class_room.html">Classroom</a>
+            <button class="theme-toggle" id="themeToggle">Toggle Theme</button>
+            <a href="login.html">Logout</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="course-content">
+            <h1 id="courseTitle">Course Title</h1>
+            <p class="coming-soon">This course is currently in development</p>
+            
+            <div class="features-container">
+                <div class="features-list">
+                    <h3>What to expect in this course:</h3>
+                    <ul>
+                        <li>Comprehensive coverage of the topic with expert-curated content</li>
+                        <li>Interactive learning materials and engaging multimedia</li>
+                        <li>Hands-on projects and practical exercises</li>
+                        <li>Knowledge checks and quizzes to reinforce learning</li>
+                        <li>24/7 AI-powered tutoring assistance</li>
+                    </ul>
+                </div>
+            </div>
+
+            <p class="progress-message">
+                Our team is working diligently to create a high-quality learning experience for you.<br>
+                We expect to launch this course within the next few weeks.
+            </p>
+            
+            <button class="notify-me" onclick="notifyMe()">Notify Me When Available</button>
+            
+            <a href="courses.html" class="back-to-courses">← Back to all courses</a>
+        </div>
+    </div>
+
+    <footer>
+        <p>AI-Powered Tutor</p>
+    </footer>
+
+    <script>
+        // Set the course title from URL parameter
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const courseName = urlParams.get('course');
+            if (courseName) {
+                document.getElementById('courseTitle').textContent = courseName;
+            }
+        });
+
+        // Theme toggle functionality
+        const themeToggle = document.getElementById("themeToggle");
+        const body = document.body;
+
+        const savedTheme = localStorage.getItem("theme");
+        if (savedTheme) {
+            body.classList.add(savedTheme);
+            updateButtonText();
+        }
+
+        themeToggle.addEventListener("click", () => {
+            body.classList.toggle("light-theme");
+            localStorage.setItem("theme", body.classList.contains("light-theme") ? "light-theme" : "");
+            updateButtonText();
+        });
+
+        function updateButtonText() {
+            if (body.classList.contains("light-theme")) {
+                themeToggle.textContent = "Dark Mode";
+            } else {
+                themeToggle.textContent = "Light Mode";
+            }
+        }
+
+        function notifyMe() {
+            const courseName = document.getElementById('courseTitle').textContent;
+            let notifications = JSON.parse(localStorage.getItem('courseNotifications')) || [];
+            
+            if (!notifications.includes(courseName)) {
+                notifications.push(courseName);
+                localStorage.setItem('courseNotifications', JSON.stringify(notifications));
+                alert(`We'll notify you when "${courseName}" is available!`);
+            } else {
+                alert(`You're already on the notification list for "${courseName}"!`);
+            }
+        }
+    </script>
+</body>
+</html>

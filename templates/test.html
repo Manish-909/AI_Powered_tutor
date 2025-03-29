@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - AI-Powered Tutor</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Add your CSS styles here */
+        /* Global Styles */
+  :root {
+            --primary-color: #4A90E2; /* Calm blue */
+            --secondary-color: #50E3C2; /* Teal */
+            --background-color: #121212; /* Dark background */
+            --text-color: #FFFFFF; /* White text */
+            --card-color: #1F1F1F; /* Dark cards */
+            --border-radius: 10px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        body.light-theme {
+            --background-color: #F5F7FA; /* Light background */
+            --text-color: #2D3748; /* Dark text */
+            --card-color: #FFFFFF; /* Light cards */
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        a {
+            text-decoration: none;
+            color: var(--primary-color);
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--card-color);
+            box-shadow: var(--box-shadow);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: var(--border-radius);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        header nav {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        header nav a {
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        header nav a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Theme Toggle Button */
+        .theme-toggle {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            background-color: #357ABD;
+        }
+
+        .test-container {
+            background-color: var(--card-color);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+            margin-bottom: 20px;
+        }
+
+        .test-container h2 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .test-container p {
+            color: var(--text-color);
+            margin-bottom: 10px;
+        }
+
+        .test-container textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            background-color: var(--card-color);
+            color: var(--text-color);
+            resize: none;
+            margin-bottom: 10px;
+        }
+
+        .submit-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%;
+        }
+
+        .submit-btn:hover {
+            background-color: #357ABD;
+        }
+        /* Footer */
+        footer {
+            background-color: var(--card-color);
+            box-shadow: var(--box-shadow);
+            padding: 20px;
+            text-align: center;
+            margin-top: 20px;
+            border-radius: var(--border-radius);
+        }
+
+        footer p {
+            margin: 0;
+            color: var(--text-color);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">AI-Powered Tutor</div>
+        <nav>
+            <a href="main.html">Dashboard</a>
+            <a href="courses.html">Courses</a>
+            <a href="class_room.html">Classroom</a>
+            <button class="theme-toggle" id="themeToggle">Toggle Theme</button>
+            <a href="login.html">Logout</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div id="testContainer" class="test-container">
+            <!-- Test will be dynamically populated here -->
+        </div>
+    </div>
+
+    <footer>
+        <p>AI-Powered Tutor</p>
+    </footer>
+
+    <script>
+
+        // Theme Toggle Functionality
+        const themeToggle = document.getElementById("themeToggle");
+        const body = document.body;
+
+        const savedTheme = localStorage.getItem("theme");
+        if (savedTheme) {
+            body.classList.add(savedTheme);
+            updateButtonText();
+        }
+
+        themeToggle.addEventListener("click", () => {
+            body.classList.toggle("light-theme");
+            localStorage.setItem("theme", body.classList.contains("light-theme") ? "light-theme" : "");
+            updateButtonText();
+        });
+
+        // Update Button Text
+        function updateButtonText() {
+            if (body.classList.contains("light-theme")) {
+                themeToggle.textContent = "Dark Mode";
+            } else {
+                themeToggle.textContent = "Light Mode";
+            }
+        }
+
+        // Fetch and display the test
+        async function fetchTest() {
+            const testContainer = document.getElementById("testContainer");
+
+            // Get the course name from the URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const courseName = urlParams.get("course");
+
+            if (!courseName) {
+                testContainer.innerHTML = "<p>No course selected.</p>";
+                return;
+            }
+
+            try {
+                // Send the course name to the backend to generate a test
+                const response = await fetch("http://localhost:5000/generate-test", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        course: courseName,
+                    }),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const test = data.test;
+
+                // Display the test
+                testContainer.innerHTML = `
+                    <h2>Test for ${courseName}</h2>
+                    <form id="testForm">
+                        <h3>Multiple-Choice Questions</h3>
+                        ${test.mcqs.map((mcq, index) => `
+                            <div>
+                                <p>${index + 1}. ${mcq.question}</p>
+                                ${mcq.options.map((option, i) => `
+                                    <label>
+                                        <input type="radio" name="mcq${index}" value="${option}"> ${option}
+                                    </label>
+                                `).join("")}
+                            </div>
+                        `).join("")}
+
+                        <h3>Short-Answer Questions</h3>
+                        ${test.short_answers.map((saq, index) => `
+                            <div>
+                                <p>${index + 1}. ${saq.question}</p>
+                                <textarea name="saq${index}" rows="3"></textarea>
+                            </div>
+                        `).join("")}
+
+                        <button type="submit" class="submit-btn">Submit Test</button>
+                    </form>
+                `;
+
+                // Handle form submission
+                document.getElementById("testForm").addEventListener("submit", async (e) => {
+                    e.preventDefault();
+                    const formData = new FormData(e.target);
+                    const answers = {};
+
+                    // Collect MCQ answers
+                    test.mcqs.forEach((mcq, index) => {
+                        answers[`mcq${index}`] = formData.get(`mcq${index}`);
+                    });
+
+                    // Collect short-answer answers
+                    test.short_answers.forEach((saq, index) => {
+                        answers[`saq${index}`] = formData.get(`saq${index}`);
+                    });
+
+                    // Send answers to the backend for assessment
+                    const assessmentResponse = await fetch("http://localhost:5000/assess-test", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            course: courseName,
+                            answers: answers,
+                        }),
+                    });
+
+                    const assessmentData = await assessmentResponse.json();
+                    const score = assessmentData.assessment.score;
+
+                    // Store the score in localStorage
+                    localStorage.setItem(`testScore_${courseName}`, score);
+
+                    // Display the score
+                    alert(`Your score: ${score}/100`);
+                    window.location.href = "main.html";  // Redirect to the dashboard
+                });
+
+            } catch (error) {
+                console.error("Error fetching test:", error);
+                testContainer.innerHTML = "<p>Unable to load the test at the moment.</p>";
+            }
+        }
+
+        // Initialize
+        fetchTest();
+    </script>
+</body>
+</html>

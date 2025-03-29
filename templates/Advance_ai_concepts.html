@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introduction to AI - AI-Powered Tutor</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Global Styles */
+        :root {
+            --primary-color: #4A90E2; /* Calm blue */
+            --secondary-color: #50E3C2; /* Teal */
+            --background-color: #121212; /* Dark background */
+            --text-color: #FFFFFF; /* White text */
+            --card-color: #1F1F1F; /* Dark cards */
+            --border-radius: 10px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        body.light-theme {
+            --background-color: #F5F7FA; /* Light background */
+            --text-color: #2D3748; /* Dark text */
+            --card-color: #FFFFFF; /* Light cards */
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            overflow-x: hidden; /* Prevent horizontal scroll */
+        }
+
+        a {
+            text-decoration: none;
+            color: var(--primary-color);
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--card-color);
+            box-shadow: var(--box-shadow);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: var(--border-radius);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative; 
+            z-index: 1000;       }
+
+        header .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        header nav {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        header nav a {
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        header nav a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Theme Toggle Button */
+        .theme-toggle {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            background-color: #357ABD;
+        }
+
+        /* Chat with AI Button */
+        .chat-toggle-btn {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .chat-toggle-btn:hover {
+            background-color: #3683e9;
+        }
+
+        /* Course Content */
+        .course-content {
+            background-color: var(--card-color);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+            margin-bottom: 20px;
+        }
+
+        .course-content h2 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .course-content p {
+            color: var(--text-color);
+            line-height: 1.8;
+        }
+
+        /* Slide-in Chat Window */
+        .chat-window {
+            position: fixed;
+            top: 20px; /* Add gap between header and chat window */
+            right: -50%; /* Hide chat window by default */
+            width: 50%; /* 50% of the screen width */
+            height: calc(100vh - 80px); /* Adjusted height with gap at top and bottom */
+            background-color: var(--card-color);
+            box-shadow: var(--box-shadow);
+            transition: right 0.3s ease;
+            z-index: 999; /* Ensure chat window is above other content */
+            border-radius: var(--border-radius) 0 0 var(--border-radius); /* Rounded edges on the left */
+        }
+
+        .chat-window.open {
+            right: 0; /* Slide in when open */
+        }
+
+        .chat-body {
+            padding: 20px;
+            height: calc(100vh - 180px); /* Adjusted height for input area */
+            overflow-y: auto; /* Enable scrolling for chat messages */
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 10px;
+            padding: 20px;
+            background-color: var(--card-color);
+            border-radius: 0 0 0 var(--border-radius); /* Rounded bottom-left corner */
+            position: relative; /* For positioning the close button */
+        }
+
+        .chat-input textarea {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            background-color: var(--card-color);
+            color: var(--text-color);
+            resize: none;
+        }
+
+        .chat-input textarea:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        /* Smaller buttons for Send and Close */
+        .chat-input button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 8px 16px; /* Reduced padding for smaller buttons */
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-size: 14px; /* Smaller font size */
+        }
+
+        .chat-input button:hover {
+            background-color: #357ABD;
+        }
+
+        /* Close button styling */
+        #closeChat {
+            background-color: transparent;
+            color: var(--text-color);
+            font-size: 20px; /* Slightly larger for visibility */
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #closeChat:hover {
+            color: var(--primary-color);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--card-color);
+            box-shadow: var(--box-shadow);
+            padding: 20px;
+            text-align: center;
+            margin-top: 20px;
+            border-radius: var(--border-radius);
+        }
+
+        footer p {
+            margin: 0;
+            color: var(--text-color);
+        }
+    /* Additional styles for course content */
+    .module {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: var(--card-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        .module h3 {
+            color: var(--secondary-color);
+            margin-top: 0;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+        }
+
+        .concept {
+            margin-bottom: 20px;
+        }
+
+        .concept h4 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .concept p {
+            margin-bottom: 15px;
+        }
+
+        .key-point {
+            background-color: rgba(74, 144, 226, 0.1);
+            border-left: 4px solid var(--primary-color);
+            padding: 10px 15px;
+            margin: 15px 0;
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+        }
+
+        .example {
+            background-color: rgba(80, 227, 194, 0.1);
+            border-left: 4px solid var(--secondary-color);
+            padding: 10px 15px;
+            margin: 15px 0;
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+        }
+
+        .diagram {
+            max-width: 100%;
+            height: auto;
+            border-radius: var(--border-radius);
+            margin: 15px 0;
+            border: 1px solid var(--primary-color);
+        }
+
+        .quiz {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: var(--card-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        .quiz h3 {
+            color: var(--secondary-color);
+            margin-top: 0;
+        }
+
+        .quiz-question {
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">AI-Powered Tutor</div>
+        <nav>
+            <a href="main.html">Dashboard</a>
+            <a href="courses.html">Courses</a>
+            <a href="class_room.html">Classroom</a>
+            <button class="theme-toggle" id="themeToggle">Toggle Theme</button>
+            <button class="chat-toggle-btn" id="chatToggle">Chat with AI</button>
+            <a href="login.html">Logout</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <!-- Course Content -->
+        <div class="course-content">
+            <h1>Advanced AI Concepts</h1>
+            <p>This course dives deep into cutting-edge artificial intelligence topics, building on fundamental knowledge to explore sophisticated techniques and applications.</p>
+            
+            <div class="module">
+                <h2>Course Modules</h2>
+                
+                <div class="module">
+                    <h3>1. Deep Learning Architectures</h3>
+                    
+                    <div class="concept">
+                        <h4>Neural Network Variations</h4>
+                        <p>Explore advanced neural network architectures beyond basic feedforward networks:</p>
+                        
+                        <div class="key-point">
+                            <strong>Convolutional Neural Networks (CNNs):</strong> Specialized for processing grid-like data (images, videos) using convolutional layers that preserve spatial relationships.
+                        </div>
+                        
+                        <div class="key-point">
+                            <strong>Recurrent Neural Networks (RNNs):</strong> Designed for sequential data with internal memory, using feedback connections to process variable-length sequences.
+                        </div>
+                        
+                        <div class="example">
+                            <strong>Example:</strong> LSTM (Long Short-Term Memory) networks address the vanishing gradient problem in standard RNNs through gated mechanisms that regulate information flow.
+                        </div>
+                    </div>
+                    
+                    <div class="concept">
+                        <h4>Transformer Architectures</h4>
+                        <p>The transformer model revolutionized natural language processing with its attention mechanisms:</p>
+                        
+                        <div class="key-point">
+                            <strong>Self-Attention:</strong> Allows the model to weigh the importance of different parts of the input differently when making predictions.
+                        </div>
+                        
+                        <div class="key-point">
+                            <strong>Multi-Head Attention:</strong> Enables the model to jointly attend to information from different representation subspaces.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="module">
+                    <h3>2. Generative Models</h3>
+                    
+                    <div class="concept">
+                        <h4>GANs (Generative Adversarial Networks)</h4>
+                        <p>GANs consist of two competing neural networks:</p>
+                        
+                        <div class="key-point">
+                            <strong>Generator:</strong> Creates synthetic data samples that resemble real data.
+                        </div>
+                        
+                        <div class="key-point">
+                            <strong>Discriminator:</strong> Attempts to distinguish between real and generated samples.
+                        </div>
+                        
+                        <div class="example">
+                            <strong>Application:</strong> StyleGAN can generate photorealistic human faces that don't correspond to real people.
+                        </div>
+                    </div>
+                    
+                    <div class="concept">
+                        <h4>Diffusion Models</h4>
+                        <p>Recent breakthrough in generative AI that works by gradually adding noise to data and then learning to reverse the process:</p>
+                        
+                        <div class="key-point">
+                            <strong>Forward Process:</strong> Systematically corrupts data by adding Gaussian noise over many steps.
+                        </div>
+                        
+                        <div class="key-point">
+                            <strong>Reverse Process:</strong> Neural network learns to denoise and recover the original data structure.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="module">
+                    <h3>3. Reinforcement Learning</h3>
+                    
+                    <div class="concept">
+                        <h4>Q-Learning and Policy Gradients</h4>
+                        <p>Advanced techniques for training agents to make sequences of decisions:</p>
+                        
+                        <div class="key-point">
+                            <strong>Deep Q-Networks (DQN):</strong> Combines Q-learning with deep neural networks to handle high-dimensional state spaces.
+                        </div>
+                        
+                        <div class="key-point">
+                            <strong>Policy Optimization:</strong> Directly learns the policy function that maps states to actions using gradient ascent.
+                        </div>
+                    </div>
+                    
+                    <div class="concept">
+                        <h4>Multi-Agent Systems</h4>
+                        <p>Scenarios where multiple agents interact and learn simultaneously:</p>
+                        
+                        <div class="example">
+                            <strong>Example:</strong> In competitive environments like game playing, agents can develop sophisticated strategies through self-play (e.g., AlphaGo).
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="module">
+                    <h3>4. AI Ethics and Safety</h3>
+                    
+                    <div class="concept">
+                        <h4>Bias and Fairness</h4>
+                        <p>Critical considerations for responsible AI development:</p>
+                        
+                        <div class="key-point">
+                            <strong>Algorithmic Bias:</strong> How training data and model architectures can perpetuate or amplify societal biases.
+                        </div>
+                        
+                        <div class="key-point">
+                            <strong>Fairness Metrics:</strong> Statistical parity, equal opportunity, and other quantitative measures of fairness.
+                        </div>
+                    </div>
+                    
+                    <div class="concept">
+                        <h4>Explainable AI (XAI)</h4>
+                        <p>Techniques to make complex models more interpretable:</p>
+                        
+                        <div class="key-point">
+                            <strong>SHAP Values:</strong> Quantify the contribution of each feature to a particular prediction.
+                        </div>
+                        
+                        <div class="key-point">
+                            <strong>Attention Visualization:</strong> For transformer models, showing which parts of the input the model focuses on.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="quiz">
+                <h3>Knowledge Check</h3>
+                
+                <div class="quiz-question">
+                    <p><strong>1. What is the key innovation of transformer architectures compared to traditional RNNs?</strong></p>
+                    <ul>
+                        <li>A) They use convolutional layers</li>
+                        <li>B) They implement attention mechanisms</li>
+                        <li>C) They have fewer parameters</li>
+                        <li>D) They only work with images</li>
+                    </ul>
+                </div>
+                
+                <div class="quiz-question">
+                    <p><strong>2. In GANs, what is the role of the discriminator?</strong></p>
+                    <ul>
+                        <li>A) To generate new samples</li>
+                        <li>B) To distinguish real from generated samples</li>
+                        <li>C) To optimize the loss function</li>
+                        <li>D) To preprocess the input data</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Theme Toggle Functionality
+        const themeToggle = document.getElementById("themeToggle");
+        const body = document.body;
+
+        // Check for saved theme in localStorage
+        const savedTheme = localStorage.getItem("theme");
+        if (savedTheme) {
+            body.classList.add(savedTheme);
+            updateButtonText();
+        }
+
+        // Toggle Theme
+        themeToggle.addEventListener("click", () => {
+            body.classList.toggle("light-theme");
+            localStorage.setItem("theme", body.classList.contains("light-theme") ? "light-theme" : "");
+            updateButtonText();
+        });
+
+        // Update Button Text
+        function updateButtonText() {
+            if (body.classList.contains("light-theme")) {
+                themeToggle.textContent = "Dark Mode";
+            } else {
+                themeToggle.textContent = "Light Mode";
+            }
+        }
+
+        // Chat Window Toggle
+        const chatToggle = document.getElementById("chatToggle");
+        const chatWindow = document.getElementById("chatWindow");
+        const closeChat = document.getElementById("closeChat");
+
+        chatToggle.addEventListener("click", () => {
+            chatWindow.classList.toggle("open");
+        });
+
+        closeChat.addEventListener("click", () => {
+            chatWindow.classList.remove("open");
+        });
+
+        // Close chat window when clicking outside
+        document.addEventListener("click", (event) => {
+            if (!chatWindow.contains(event.target) && !chatToggle.contains(event.target)) {
+                chatWindow.classList.remove("open");
+            }
+        });
+        async function askAI() {
+    const question = document.getElementById("userQuestion").value.trim();
+    const chatBody = document.getElementById("chatBody");
+    
+    if (!question) {
+        alert("Please enter a question.");
+        return;
+    }
+
+    // Clear previous errors
+    const existingErrors = document.querySelectorAll('.error-message');
+    existingErrors.forEach(el => el.remove());
+
+    // Add user message
+    chatBody.innerHTML += `<div class="user-message">You: ${question}</div>`;
+    
+    // Create response element
+    const responseId = "response-" + Date.now();
+    chatBody.innerHTML += `
+        <div id="${responseId}" class="ai-message">
+            <strong>AI Tutor:</strong> <span id="${responseId}-text"></span>
+            <span class="typing-cursor">|</span>
+        </div>
+    `;
+    chatBody.scrollTop = chatBody.scrollHeight;
+    
+    const responseText = document.getElementById(`${responseId}-text`);
+    const cursor = document.querySelector(`#${responseId} .typing-cursor`);
+    
+    try {
+        // First check backend health
+        const healthResponse = await fetch('http://localhost:5000/health');
+        if (!healthResponse.ok) {
+            throw new Error("Backend server not responding");
+        }
+        
+        const healthData = await healthResponse.json();
+        if (!healthData.ollama_available) {
+            throw new Error("Ollama service not available");
+        }
+        if (!healthData.vector_store_loaded) {
+            throw new Error("Course content not loaded - check PDF file");
+        }
+
+        // Setup EventSource for streaming
+        const eventSource = new EventSource(`http://localhost:5000/ask?question=${encodeURIComponent(question)}`);
+        
+        eventSource.onmessage = (event) => {
+            try {
+                if (event.data.includes('[DONE]')) {
+                    eventSource.close();
+                    cursor.style.display = "none";
+                    return;
+                }
+                
+                const data = JSON.parse(event.data.replace('data: ', ''));
+                if (data.token) {
+                    responseText.textContent += data.token;
+                    chatBody.scrollTop = chatBody.scrollHeight;
+                }
+            } catch (e) {
+                console.error("Error parsing message:", e);
+            }
+        };
+
+        eventSource.onerror = () => {
+            cursor.style.display = "none";
+            if (!responseText.textContent.trim()) {
+                responseText.innerHTML = `<span class="error-message">
+                    Connection error. Please:<br>
+                    1. Ensure the backend is running (python AI_Teacher.py)<br>
+                    2. Verify Ollama is running (ollama serve)<br>
+                    3. Check ai_course.pdf exists in course_data folder
+                </span>`;
+            }
+            eventSource.close();
+        };
+        
+    } catch (error) {
+        console.error("Error:", error);
+        document.getElementById(responseId).innerHTML = `
+            <div class="error-message">
+                <strong>Error:</strong> ${error.message}<br>
+                <small>Check console for details (F12 > Console)</small>
+            </div>
+        `;
+    }
+}
+
+    </script>
+</body>
+</html>
