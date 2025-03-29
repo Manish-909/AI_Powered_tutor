@@ -1,2 +1,2 @@
 # AI_Powered_tutor
- a project developed based on Intel's problem statements
+ A project developed based on Intel's problem statements
